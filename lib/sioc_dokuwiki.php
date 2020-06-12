@@ -47,7 +47,10 @@ class SIOCDokuWikiArticle extends SIOCObject
     function addCreator($creator) { $this->_creator = $creator; }
     function addContributors($contributors) { $this->_contributors = $contributors; }
     function isCreator() { $this->_is_creator = true; }
-    function addLinks($links) { if (is_array($links) && count($links) > 0) $this->_links = $links; }
+    function addLinks($links) { if (is_array($links) && count($links) > 0) {
+      $this->_links = $links;
+    }
+    }
     function addBacklinks($links) { $this->_backlinks = $links; }
     //function addLinksExtern($links) { if (is_array($links) && count($links)>0) $this->_ext_links = $links; }
     function addVersionPrevious($rev) { $this->_previous_version = $rev; }
@@ -74,8 +77,9 @@ class SIOCDokuWikiArticle extends SIOCObject
         {
             foreach ($this->_contributors as $cont_id => $cont_name)
             {
-                if (!isset($this->_creator['sioc:modifier']) || ($this->_creator['sioc:modifier'] != $cont_id))
-                    $rdf .= "\t<sioc:has_modifier rdf:resource=\"".normalizeUri($exp->siocURL('user', $cont_id))."\" rdfs:label=\"".clean($cont_name)."\"/>\n";
+                if (!isset($this->_creator['sioc:modifier']) || ($this->_creator['sioc:modifier'] != $cont_id)) {
+                                    $rdf .= "\t<sioc:has_modifier rdf:resource=\"".normalizeUri($exp->siocURL('user', $cont_id))."\" rdfs:label=\"".clean($cont_name)."\"/>\n";
+                }
             }
             
             if (isset($this->_contributors[$this->_creator['sioc:modifier']]))
@@ -274,7 +278,9 @@ class SIOCDokuWikiUser extends SIOCObject
 
     function getContent(&$exp) {
         $rdf = "<sioc:UserAccount rdf:about=\"".clean($this->_url, true)."\">\n";
-        if ($this->_nick) $rdf .= "\t<sioc:name>".clean($this->_nick)."</sioc:name>\n";
+        if ($this->_nick) {
+          $rdf .= "\t<sioc:name>".clean($this->_nick)."</sioc:name>\n";
+        }
         if ($this->_email) {
             if ($exp->_export_email) { $rdf .= "\t<sioc:email rdf:resource=\"".$this->_email."\"/>\n"; }
             $rdf .= "\t<sioc:email_sha1>".$this->_sha1."</sioc:email_sha1>\n";
@@ -288,7 +294,9 @@ class SIOCDokuWikiUser extends SIOCObject
         }
         $rdf .= "\t<sioc:account_of>\n";
         $rdf .= "\t\t<foaf:Person>\n";
-        if ($this->_name) $rdf .= "\t\t\t<foaf:name>".clean($this->_name)."</foaf:name>\n";
+        if ($this->_name) {
+          $rdf .= "\t\t\t<foaf:name>".clean($this->_name)."</foaf:name>\n";
+        }
         if ($this->_email) { $rdf .= "\t\t\t<foaf:mbox_sha1sum>".$this->_sha1."</foaf:mbox_sha1sum>\n"; }
         if ($this->_foaf_url) { $rdf .= "\t\t\t<rdfs:seeAlso rdf:resource=\"".$this->_foaf_url."\"/>\n"; }
         $rdf .= "\t\t</foaf:Person>\n";  
