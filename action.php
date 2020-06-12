@@ -147,7 +147,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     
     /**
     */
-    function createRdfLink(&$event = null, $param = null)
+    function createRdfLink($event = null, $param = null)
     {
         global $ID, $INFO, $conf;
         
