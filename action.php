@@ -82,7 +82,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     /**
     * Register its handlers with the DokuWiki's event controller
     */
-    function register(Doku_Event_Handler $controller)
+    public function register(Doku_Event_Handler $controller)
     {
         //print_r(headers_list()); die();
         
@@ -94,7 +94,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
  
     /* -- Event handlers ---------------------------------------------------- */
 
-    function checkAction($action, $controller)
+    public function checkAction($action, $controller)
     {
         global $INFO;
         //print_r($INFO); die();
@@ -130,7 +130,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         */
     }
     
-    function pingService($data, $controller)
+    public function pingService($data, $controller)
     {
         // TODO: test acl
         // TODO: write in message queue (?)
@@ -147,7 +147,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     
     /**
     */
-    function createRdfLink($event = null, $param = null)
+    public function createRdfLink($event = null, $param = null)
     {
         global $ID, $INFO, $conf;
         
@@ -215,7 +215,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     
     /* -- public class methods ---------------------------------------------- */
 
-    function exportSioc()
+    public function exportSioc()
     {
         global $ID, $INFO, $conf, $REV, $auth;
         
@@ -279,7 +279,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         die();
     }
     
-    function isRdfXmlRequest()
+    public function isRdfXmlRequest()
     {   
         // get accepted types
         $http_accept = trim($_SERVER['HTTP_ACCEPT']);
@@ -341,7 +341,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
 
     /* -- private helpers --------------------------------------------------- */
     
-    function _getContenttype()
+    private function _getContenttype()
     {
         global $ID, $conf;
 
@@ -373,7 +373,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     
     }
     
-    function _exportPostcontent($exporter)
+    private function _exportPostcontent($exporter)
     {
         global $ID, $INFO, $REV, $conf;
 
@@ -473,7 +473,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         
     }
     
-    function _exportContainercontent($exporter)
+    private function _exportContainercontent($exporter)
     {
         global $ID, $INFO, $conf;
         
@@ -543,7 +543,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         return $exporter;
     }
     
-    function _exportUsercontent($exporter)
+    private function _exportUsercontent($exporter)
     {
         global $ID;
                 
@@ -576,18 +576,18 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         return $exporter;
     }
     
-    function _exit($headermsg)
+    private function _exit($headermsg)
     {
         header($headermsg);
         die();
     }
 
-    function _getDokuUrl($url=null)
+    private function _getDokuUrl($url=null)
     {
         return getAbsUrl($url);
     }
     
-    function _getDate($date, $date_alt=null)
+    private function _getDate($date, $date_alt=null)
     {
         if (!$date) $date = $date_alt;
         return date('c',$date);
