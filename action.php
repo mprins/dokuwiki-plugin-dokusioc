@@ -68,8 +68,8 @@
  * - proof of concept release under CC-BY-SA
  **/
  
-if(!defined('DOKU_INC')) die();
-if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
+if (!defined('DOKU_INC')) die();
+if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC.'lib/plugins/');
 require_once(DOKU_PLUGIN.'action.php');
  
 class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
@@ -80,16 +80,16 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     /* -- Methods to manage plugin ------------------------------------------ */
 
     /**
-    * Register its handlers with the DokuWiki's event controller
-    */
+     * Register its handlers with the DokuWiki's event controller
+     */
     public function register(Doku_Event_Handler $controller)
     {
         //print_r(headers_list()); die();
         
         // test the requested action
-        $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE',  $this, 'checkAction', $controller);
+        $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'checkAction', $controller);
         // pingthesemanticweb.com
-        if ($this->getConf('pingsw')) $controller->register_hook('ACTION_SHOW_REDIRECT', 'BEFORE',  $this, 'pingService', $controller);
+        if ($this->getConf('pingsw')) $controller->register_hook('ACTION_SHOW_REDIRECT', 'BEFORE', $this, 'pingService', $controller);
     }
  
     /* -- Event handlers ---------------------------------------------------- */
@@ -105,7 +105,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             // give back rdf
             $this->exportSioc();
         }
-        elseif (($action->data == 'show' || $action->data == 'index') && $INFO['perm'] && !defined('DOKU_MEDIADETAIL') && ($INFO['exists'] || getDwUserInfo($INFO['id'],$this)) && !isHiddenPage($INFO['id']))
+        elseif (($action->data == 'show' || $action->data == 'index') && $INFO['perm'] && !defined('DOKU_MEDIADETAIL') && ($INFO['exists'] || getDwUserInfo($INFO['id'], $this)) && !isHiddenPage($INFO['id']))
         {
             if ($this->isRdfXmlRequest())
             {
@@ -118,7 +118,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             else
             {
                 // add meta link to html head
-                $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE',  $this, 'createRdfLink');
+                $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'createRdfLink');
             }
         }
         /*
@@ -140,21 +140,22 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             //die('http://pingthesemanticweb.com/rest/?url='.urlencode(getAbsUrl(wl($data->data['id']))));
             //$ping = fopen('http://pingthesemanticweb.com/rest/?url='.urlencode(getAbsUrl(wl($data->data['id']))),'r');
             // it must be a post, and it's the last revision
-            $ping = @fopen('http://pingthesemanticweb.com/rest/?url='.urlencode(normalizeUri(getAbsUrl(exportlink($data->data['id'], 'siocxml', array('type'=>'post'), false, '&')))),'r');
+            $ping = @fopen('http://pingthesemanticweb.com/rest/?url='.urlencode(normalizeUri(getAbsUrl(exportlink($data->data['id'], 'siocxml', array('type'=>'post'), false, '&')))), 'r');
             @fclose($ping);
         }
     }
     
     /**
-    */
+     */
     public function createRdfLink($event = null, $param = null)
     {
         global $ID, $INFO, $conf;
         
         // Test for hidden pages
         
-        if (isHiddenPage($ID))
-            return false;
+        if (isHiddenPage($ID)) {
+                    return false;
+        }
         
         // Get type of SIOC content
         
@@ -162,13 +163,16 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         
         // Test for valid types
         
-        if (!(($sioc_type == 'post' && $INFO['exists']) || $sioc_type == 'user' || $sioc_type == 'container'))
-            return false;
+        if (!(($sioc_type == 'post' && $INFO['exists']) || $sioc_type == 'user' || $sioc_type == 'container')) {
+                    return false;
+        }
         
         // Test for permission
         
-        if (!$INFO['perm']) // not enough rights to see the wiki page
+        if (!$INFO['perm']) {
+          // not enough rights to see the wiki page
             return false;
+        }
 
         $userinfo = getDwUserInfo($ID, $this);
         
@@ -180,19 +184,19 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         switch ($sioc_type)
         {
             case 'container':
-                $title = htmlentities("Container '".(isset($INFO['meta']['title'])?$INFO['meta']['title']:$ID)."' (SIOC document as RDF/XML)");
+                $title = htmlentities("Container '".(isset($INFO['meta']['title']) ? $INFO['meta']['title'] : $ID)."' (SIOC document as RDF/XML)");
                 $queryAttr = array('type'=>'container');
                 break;
                 
             case 'user':
                 $title = htmlentities("User account '".$userinfo['name']."' (SIOC document as RDF/XML)");
-                $queryAttr =  array('type'=>'user');
+                $queryAttr = array('type'=>'user');
                 break;
 
             case 'post':
             default:
                 $title = htmlentities("Article '".$INFO['meta']['title']."' (SIOC document as RDF/XML)");
-                $queryAttr =  array('type'=>'post');
+                $queryAttr = array('type'=>'post');
                 if (isset($_GET['rev']) && $_GET['rev'] == intval($_GET['rev']))
                     $queryAttr['rev'] = $_GET['rev'];
                 break;
@@ -206,8 +210,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             $event->data['link'][] = $metalink;
             
             // set canocial link for type URIs to prevent indexing double content
-            if ($_GET['type'])
-                $event->data['link'][] = array('rel'=>'canonical', 'href'=>getAbsUrl(wl($ID)));
+            if ($_GET['type']) {
+                            $event->data['link'][] = array('rel'=>'canonical', 'href'=>getAbsUrl(wl($ID)));
+            }
         }
         
         return $metalink;
@@ -221,8 +226,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         
         // Test for hidden pages
         
-        if (isHiddenPage($ID))
-            $this->_exit("HTTP/1.0 404 Not Found");
+        if (isHiddenPage($ID)) {
+                    $this->_exit("HTTP/1.0 404 Not Found");
+        }
         
         // Get type of SIOC content
         
@@ -230,16 +236,21 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         
         // Test for valid types
         
-        if (!(($sioc_type == 'post' && $INFO['exists']) || $sioc_type == 'user' || $sioc_type == 'container'))
-            $this->_exit("HTTP/1.0 404 Not Found");
+        if (!(($sioc_type == 'post' && $INFO['exists']) || $sioc_type == 'user' || $sioc_type == 'container')) {
+                    $this->_exit("HTTP/1.0 404 Not Found");
+        }
         
         // Test for permission
         
-        if (!$INFO['perm']) // not enough rights to see the wiki page
+        if (!$INFO['perm']) {
+          // not enough rights to see the wiki page
             $this->_exit("HTTP/1.0 401 Unauthorized");
+        }
 
         // Forward to URI with explicit type attribut
-        if (!isset($_GET['type'])) header('Location:'.$_SERVER['REQUEST_URI'].'&type='.$sioc_type, true, 302);
+        if (!isset($_GET['type'])) {
+          header('Location:'.$_SERVER['REQUEST_URI'].'&type='.$sioc_type, true, 302);
+        }
 
         // Include SIOC libs
         
@@ -271,8 +282,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         }
     
         // export
-        if ($this->getConf('noindx')) 
-            header("X-Robots-Tag: noindex", true);
+        if ($this->getConf('noindx')) {
+                    header("X-Robots-Tag: noindex", true);
+        }
         $rdf->export();
         
         //print_r(headers_list()); die();
@@ -304,21 +316,20 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             return true;
         }
         
-        if (count($accepted)>0)
+        if (count($accepted) > 0)
         {
             // hard check, only serve RDF if it is requested first or equal to first type
     
             // extract accepting ratio
             $test_accept = array();
-            foreach($accepted as $format)
+            foreach ($accepted as $format)
             {
-                $formatspec = explode(';',$format);
+                $formatspec = explode(';', $format);
                 $k = trim($formatspec[0]);
-                if (count($formatspec)==2)
+                if (count($formatspec) == 2)
                 {
                     $test_accept[$k] = trim($formatspec[1]);
-                }
-                else
+                } else
                 {
                     $test_accept[$k] = 'q=1.0';
                 }
@@ -353,18 +364,15 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             if ($userinfo)
             {
                 $type = 'user';
-            }
-            elseif (isset($_GET['do']) && $_GET['do'] == 'index')
+            } elseif (isset($_GET['do']) && $_GET['do'] == 'index')
             {
                 $type = 'container';
-            }
-            else
+            } else
             {
                 $type = 'post';
             }
             
-        }
-        else
+        } else
         {
             $type = $_GET['type'];
         }
@@ -377,7 +385,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     {
         global $ID, $INFO, $REV, $conf;
 
-        $exporter->setParameters('Article: '.$INFO['meta']['title'].($REV?' (rev '.$REV.')':''),
+        $exporter->setParameters('Article: '.$INFO['meta']['title'].($REV ? ' (rev '.$REV.')' : ''),
                             $this->_getDokuUrl(),
                             $this->_getDokuUrl().'doku.php?',
                             'utf-8',
@@ -386,7 +394,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
 
         // create user object
         // $id, $uri, $name, $email, $homepage='', $foaf_uri='', $role=false, $nick='', $sioc_url='', $foaf_url=''
-        $dwuserpage_id = cleanID($this->getConf('userns')).($conf['useslash']?'/':':').$INFO['editor'];
+        $dwuserpage_id = cleanID($this->getConf('userns')).($conf['useslash'] ? '/' : ':').$INFO['editor'];
         /*
         if ($INFO['editor'] && $this->getConf('userns'))
             $pageuser = new SIOCUser($INFO['editor'],
@@ -403,14 +411,14 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         
         // create wiki page object
         $wikipage = new SIOCDokuWikiArticle($ID, // id
-                                            normalizeUri($exporter->siocURL('post', $ID.($REV?$exporter->_urlseparator.'rev'.$exporter->_urlequal.$REV:''))), // url
-                                            $INFO['meta']['title'].($REV?' (rev '.$REV.')':''), // subject
-                                            rawWiki($ID,$REV) // body (content)
+                                            normalizeUri($exporter->siocURL('post', $ID.($REV ? $exporter->_urlseparator.'rev'.$exporter->_urlequal.$REV : ''))), // url
+                                            $INFO['meta']['title'].($REV ? ' (rev '.$REV.')' : ''), // subject
+                                            rawWiki($ID, $REV) // body (content)
                                             );
-        /* encoded content   */ $wikipage->addContentEncoded(p_cached_output(wikiFN($ID,$REV),'xhtml'));
+        /* encoded content   */ $wikipage->addContentEncoded(p_cached_output(wikiFN($ID, $REV), 'xhtml'));
         /* created           */ if (isset($INFO['meta']['date']['created'])) $wikipage->addCreated(date('c', $INFO['meta']['date']['created']));
         /* or modified       */ if (isset($INFO['meta']['date']['modified'])) $wikipage->addModified(date('c', $INFO['meta']['date']['modified']));
-        /* creator/modifier  */ if ($INFO['editor'] && $this->getConf('userns')) $wikipage->addCreator(array('foaf:maker'=>'#'.$INFO['editor'],'sioc:modifier'=>$dwuserpage_id));
+        /* creator/modifier  */ if ($INFO['editor'] && $this->getConf('userns')) $wikipage->addCreator(array('foaf:maker'=>'#'.$INFO['editor'], 'sioc:modifier'=>$dwuserpage_id));
         /* is creator        */ if (isset($INFO['meta']['date']['created'])) $wikipage->isCreator();
         /* intern wiki links */ $wikipage->addLinks($INFO['meta']['relation']['references']);
         
@@ -418,8 +426,8 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         if (!$REV && $this->getConf('userns') && isset($INFO['meta']['contributor']))
         {
             $cont_temp = array();
-            $cont_ns = $this->getConf('userns').($conf['useslash']?'/':':');
-            foreach($INFO['meta']['contributor'] as $cont_id => $cont_name)
+            $cont_ns = $this->getConf('userns').($conf['useslash'] ? '/' : ':');
+            foreach ($INFO['meta']['contributor'] as $cont_id => $cont_name)
                 $cont_temp[$cont_ns.$cont_id] = $cont_name;
             $wikipage->addContributors($cont_temp);
         }
@@ -429,21 +437,22 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         {
             require_once(DOKU_INC.'inc/fulltext.php');
             $backlinks = ft_backlinks($ID);
-            if (count($backlinks) > 0) $wikipage->addBacklinks($backlinks);
+            if (count($backlinks) > 0) {
+              $wikipage->addBacklinks($backlinks);
+            }
         }
         
         // TODO: addLinksExtern
 
         /* previous and next revision */
         $changelog = new PageChangeLog($ID);
-        $pagerevs = $changelog->getRevisions(0,$conf['recent']+1);
+        $pagerevs = $changelog->getRevisions(0, $conf['recent'] + 1);
         $prevrev = false; $nextrev = false;
         if (!$REV)
         {
             // latest revision, previous rev is on top in array
             $prevrev = 0;
-        }
-        else
+        } else
         {
             // other revision
             $currentrev = array_search($REV, $pagerevs);
@@ -453,9 +462,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
                 $nextrev = $currentrev - 1;
             }
         }
-        if ($prevrev !== false && $prevrev > -1 && page_exists($ID,$pagerevs[$prevrev]))
+        if ($prevrev !== false && $prevrev > -1 && page_exists($ID, $pagerevs[$prevrev]))
         /* previous revision*/ $wikipage->addVersionPrevious($pagerevs[$prevrev]);
-        if ($nextrev !== false && $nextrev > -1 && page_exists($ID,$pagerevs[$nextrev]))
+        if ($nextrev !== false && $nextrev > -1 && page_exists($ID, $pagerevs[$nextrev]))
         /* next revision*/ $wikipage->addVersionNext($pagerevs[$nextrev]);
 
         /* latest revision   */ if ($REV) $wikipage->addVersionLatest();
@@ -480,12 +489,10 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         if ($ID == $conf['start'])
         {
             $title = $conf['title'];
-        }
-        elseif (isset($INFO['meta']['title']))
+        } elseif (isset($INFO['meta']['title']))
         {
             $title = $INFO['meta']['title'];
-        }
-        else
+        } else
         {
             $title = $ID;
         }
@@ -500,20 +507,26 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
 
         // create container object
         $wikicontainer = new SIOCDokuWikiContainer($ID,
-                                                   normalizeUri($exporter->siocURL('container', $ID))
+                                                    normalizeUri($exporter->siocURL('container', $ID))
                                                   );
 
-        /* container is type=wiki */ if ($ID == $conf['start']) $wikicontainer->isWiki();
-        /* sioc:name              */ if ($INFO['exists']) $wikicontainer->addTitle($INFO['meta']['title']);
-        /* has_parent             */ if ($INFO['namespace']) $wikicontainer->addParent($INFO['namespace']); 
+        /* container is type=wiki */ if ($ID == $conf['start']) {
+          $wikicontainer->isWiki();
+        }
+        /* sioc:name              */ if ($INFO['exists']) {
+          $wikicontainer->addTitle($INFO['meta']['title']);
+        }
+        /* has_parent             */ if ($INFO['namespace']) {
+          $wikicontainer->addParent($INFO['namespace']);
+        }
 
         // search next level entries (posts, sub containers) in container
         require_once(DOKU_INC.'inc/search.php');
-        $dir  = utf8_encodeFN(str_replace(':','/',$ID));
+        $dir = utf8_encodeFN(str_replace(':', '/', $ID));
         $entries = array();
         $posts = array();
         $containers = array();
-        search($entries,$conf['datadir'],'search_index',array('ns' => $ID),$dir);
+        search($entries, $conf['datadir'], 'search_index', array('ns' => $ID), $dir);
         foreach ($entries as $entry)
         {
             if ($entry['type'] === 'f')
@@ -521,7 +534,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
                 // wikisite
                 $posts[] = $entry;
             }
-            elseif($entry['type'] === 'd')
+            elseif ($entry['type'] === 'd')
             {
                 // sub container
                 $containers[] = $entry;
@@ -532,8 +545,8 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         if (count($posts) + count($containers) == 0)
             $this->_exit("HTTP/1.0 404 Not Found");
         
-        if (count($posts)>0) $wikicontainer->addArticles($posts);
-        if (count($containers)>0) $wikicontainer->addContainers($containers);
+        if (count($posts) > 0) $wikicontainer->addArticles($posts);
+        if (count($containers) > 0) $wikicontainer->addContainers($containers);
 
         //print_r($containers);die();
         
@@ -548,11 +561,12 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         global $ID;
                 
         // get user info
-        $userinfo = getDwUserInfo($ID,$this);
+        $userinfo = getDwUserInfo($ID, $this);
         
         // no userinfo means there is n user space or user does not exists
-        if ($userinfo === false)
-            $this->_exit("HTTP/1.0 404 Not Found");
+        if ($userinfo === false) {
+                    $this->_exit("HTTP/1.0 404 Not Found");
+        }
         
         $exporter->setParameters('Account: '.$userinfo['name'],
                             getAbsUrl(),
@@ -563,10 +577,10 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         // create user object
         //print_r($userinfo); die();
         $wikiuser = new SIOCDokuWikiUser($ID,
-                                         normalizeUri($exporter->siocURL('user', $ID)),
-                                         $userid,
-                                         $userinfo['name'],
-                                         $userinfo['mail']);
+                                          normalizeUri($exporter->siocURL('user', $ID)),
+                                          $userid,
+                                          $userinfo['name'],
+                                          $userinfo['mail']);
         /* TODO: avatar (using Gravatar) */
         /* TODO: creator_of */
         // add user to exporter
@@ -582,24 +596,26 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         die();
     }
 
-    private function _getDokuUrl($url=null)
+    private function _getDokuUrl($url = null)
     {
         return getAbsUrl($url);
     }
     
-    private function _getDate($date, $date_alt=null)
+    private function _getDate($date, $date_alt = null)
     {
         if (!$date) $date = $date_alt;
-        return date('c',$date);
+        return date('c', $date);
     }
     
 }
 
 if (!function_exists('getAbsUrl'))
 {
-    function getAbsUrl($url=null)
+    function getAbsUrl($url = null)
     {
-        if ($url == null) $url = DOKU_BASE;
+        if ($url == null) {
+          $url = DOKU_BASE;
+        }
         return str_replace(DOKU_BASE, DOKU_URL, $url);
     }
 }
@@ -612,8 +628,7 @@ if (!function_exists('getDwUserEmail'))
         if ($info = $auth->getUserData($user))
         {
             return $info['mail'];
-        }
-        else
+        } else
         {
             return false;
         }
@@ -626,23 +641,23 @@ if (!function_exists('getDwUserInfo'))
     {
         global $auth, $conf;
         
-        if (!$pobj->getConf('userns')) return false;
+        if (!$pobj->getConf('userns')) {
+          return false;
+        }
         
         // get user id
-        $userid = str_replace(cleanID($pobj->getConf('userns')).($conf['useslash']?'/':':'),'',$id);
+        $userid = str_replace(cleanID($pobj->getConf('userns')).($conf['useslash'] ? '/' : ':'), '', $id);
         
         if ($info = $auth->getUserData($userid))
         {
             if ($key)
             {
                 return $info['key'];
-            }
-            else
+            } else
             {
                 return $info;
             }
-        }
-        else
+        } else
         {
             return false;
         }
@@ -664,7 +679,9 @@ if (!function_exists('normalizeUri'))
             
             // test separator
             $sep = '&';
-            if (strpos($query, '&amp;') !== false) $sep = '&amp;';
+            if (strpos($query, '&amp;') !== false) {
+              $sep = '&amp;';
+            }
             $attr = explode($sep, $query);
             
             sort($attr);
