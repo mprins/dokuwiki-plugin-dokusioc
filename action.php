@@ -68,8 +68,12 @@
  * - proof of concept release under CC-BY-SA
  **/
  
-if (!defined('DOKU_INC')) die();
-if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC.'lib/plugins/');
+if (!defined('DOKU_INC')) {
+  die();
+}
+if (!defined('DOKU_PLUGIN')) {
+  define('DOKU_PLUGIN', DOKU_INC.'lib/plugins/');
+}
 require_once(DOKU_PLUGIN.'action.php');
  
 class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
@@ -89,7 +93,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         // test the requested action
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'checkAction', $controller);
         // pingthesemanticweb.com
-        if ($this->getConf('pingsw')) $controller->register_hook('ACTION_SHOW_REDIRECT', 'BEFORE', $this, 'pingService', $controller);
+        if ($this->getConf('pingsw')) {
+          $controller->register_hook('ACTION_SHOW_REDIRECT', 'BEFORE', $this, 'pingService', $controller);
+        }
     }
  
     /* -- Event handlers ---------------------------------------------------- */
@@ -104,18 +110,18 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         {
             // give back rdf
             $this->exportSioc();
-        }
-        elseif (($action->data == 'show' || $action->data == 'index') && $INFO['perm'] && !defined('DOKU_MEDIADETAIL') && ($INFO['exists'] || getDwUserInfo($INFO['id'], $this)) && !isHiddenPage($INFO['id']))
+        } elseif (($action->data == 'show' || $action->data == 'index') && $INFO['perm'] && !defined('DOKU_MEDIADETAIL') && ($INFO['exists'] || getDwUserInfo($INFO['id'], $this)) && !isHiddenPage($INFO['id']))
         {
             if ($this->isRdfXmlRequest())
             {
                 // forward to rdfxml document if requested
                 // print_r(headers_list()); die();
                 $location = $this->createRdfLink();
-                if (function_exists('header_remove')) header_remove();
+                if (function_exists('header_remove')) {
+                  header_remove();
+                }
                 header('Location: '.$location['href'], true, 303); exit();
-            }
-            else
+            } else
             {
                 // add meta link to html head
                 $controller->register_hook('TPL_METAHEADER_OUTPUT', 'BEFORE', $this, 'createRdfLink');
@@ -197,8 +203,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             default:
                 $title = htmlentities("Article '".$INFO['meta']['title']."' (SIOC document as RDF/XML)");
                 $queryAttr = array('type'=>'post');
-                if (isset($_GET['rev']) && $_GET['rev'] == intval($_GET['rev']))
-                    $queryAttr['rev'] = $_GET['rev'];
+                if (isset($_GET['rev']) && $_GET['rev'] == intval($_GET['rev'])) {
+                                    $queryAttr['rev'] = $_GET['rev'];
+                }
                 break;
         }
     
@@ -416,10 +423,18 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
                                             rawWiki($ID, $REV) // body (content)
                                             );
         /* encoded content   */ $wikipage->addContentEncoded(p_cached_output(wikiFN($ID, $REV), 'xhtml'));
-        /* created           */ if (isset($INFO['meta']['date']['created'])) $wikipage->addCreated(date('c', $INFO['meta']['date']['created']));
-        /* or modified       */ if (isset($INFO['meta']['date']['modified'])) $wikipage->addModified(date('c', $INFO['meta']['date']['modified']));
-        /* creator/modifier  */ if ($INFO['editor'] && $this->getConf('userns')) $wikipage->addCreator(array('foaf:maker'=>'#'.$INFO['editor'], 'sioc:modifier'=>$dwuserpage_id));
-        /* is creator        */ if (isset($INFO['meta']['date']['created'])) $wikipage->isCreator();
+        /* created           */ if (isset($INFO['meta']['date']['created'])) {
+          $wikipage->addCreated(date('c', $INFO['meta']['date']['created']));
+        }
+        /* or modified       */ if (isset($INFO['meta']['date']['modified'])) {
+          $wikipage->addModified(date('c', $INFO['meta']['date']['modified']));
+        }
+        /* creator/modifier  */ if ($INFO['editor'] && $this->getConf('userns')) {
+          $wikipage->addCreator(array('foaf:maker'=>'#'.$INFO['editor'], 'sioc:modifier'=>$dwuserpage_id));
+        }
+        /* is creator        */ if (isset($INFO['meta']['date']['created'])) {
+          $wikipage->isCreator();
+        }
         /* intern wiki links */ $wikipage->addLinks($INFO['meta']['relation']['references']);
         
         // contributors - only for last revision b/c of wrong meta data for older revisions
@@ -427,8 +442,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         {
             $cont_temp = array();
             $cont_ns = $this->getConf('userns').($conf['useslash'] ? '/' : ':');
-            foreach ($INFO['meta']['contributor'] as $cont_id => $cont_name)
-                $cont_temp[$cont_ns.$cont_id] = $cont_name;
+            foreach ($INFO['meta']['contributor'] as $cont_id => $cont_name) {
+                            $cont_temp[$cont_ns.$cont_id] = $cont_name;
+            }
             $wikipage->addContributors($cont_temp);
         }
         
@@ -462,15 +478,23 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
                 $nextrev = $currentrev - 1;
             }
         }
-        if ($prevrev !== false && $prevrev > -1 && page_exists($ID, $pagerevs[$prevrev]))
-        /* previous revision*/ $wikipage->addVersionPrevious($pagerevs[$prevrev]);
-        if ($nextrev !== false && $nextrev > -1 && page_exists($ID, $pagerevs[$nextrev]))
-        /* next revision*/ $wikipage->addVersionNext($pagerevs[$nextrev]);
+        if ($prevrev !== false && $prevrev > -1 && page_exists($ID, $pagerevs[$prevrev])) {
+                /* previous revision*/ $wikipage->addVersionPrevious($pagerevs[$prevrev]);
+        }
+        if ($nextrev !== false && $nextrev > -1 && page_exists($ID, $pagerevs[$nextrev])) {
+                /* next revision*/ $wikipage->addVersionNext($pagerevs[$nextrev]);
+        }
 
-        /* latest revision   */ if ($REV) $wikipage->addVersionLatest();
+        /* latest revision   */ if ($REV) {
+          $wikipage->addVersionLatest();
+        }
         // TODO: topics
-        /* has_container     */ if ($INFO['namespace']) $wikipage->addContainer($INFO['namespace']); 
-        /* has_space         */ if ($this->getConf('owners')) $wikipage->addSite($this->getConf('owners')); 
+        /* has_container     */ if ($INFO['namespace']) {
+          $wikipage->addContainer($INFO['namespace']);
+        }
+        /* has_space         */ if ($this->getConf('owners')) {
+          $wikipage->addSite($this->getConf('owners'));
+        }
         // TODO: dc:contributor / has_modifier
         // TODO: attachment (e.g. pictures in that dwns)
         
@@ -533,8 +557,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             {
                 // wikisite
                 $posts[] = $entry;
-            }
-            elseif ($entry['type'] === 'd')
+            } elseif ($entry['type'] === 'd')
             {
                 // sub container
                 $containers[] = $entry;
@@ -542,11 +565,16 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         }
         
         // without sub content it can't be a container (so it does not exist as a container)
-        if (count($posts) + count($containers) == 0)
-            $this->_exit("HTTP/1.0 404 Not Found");
+        if (count($posts) + count($containers) == 0) {
+                    $this->_exit("HTTP/1.0 404 Not Found");
+        }
         
-        if (count($posts) > 0) $wikicontainer->addArticles($posts);
-        if (count($containers) > 0) $wikicontainer->addContainers($containers);
+        if (count($posts) > 0) {
+          $wikicontainer->addArticles($posts);
+        }
+        if (count($containers) > 0) {
+          $wikicontainer->addContainers($containers);
+        }
 
         //print_r($containers);die();
         
@@ -603,7 +631,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     
     private function _getDate($date, $date_alt = null)
     {
-        if (!$date) $date = $date_alt;
+        if (!$date) {
+          $date = $date_alt;
+        }
         return date('c', $date);
     }
     
