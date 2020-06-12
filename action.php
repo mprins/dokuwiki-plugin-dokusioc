@@ -80,20 +80,6 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     /* -- Methods to manage plugin ------------------------------------------ */
 
     /**
-    * return some info
-    */
-    function getInfo(){
-        return array(
-	         'author' => 'Michael Haschke',
-	         'email'  => 'haschek@eye48.com',
-	         'date'   => '2010-05-01',
-	         'name'   => 'DokuSIOC',
-	         'desc'   => 'DokuSIOC makes your wiki part of the Semantic Web! It integrates the SIOC ontology within DokuWiki and provides an alternate RDF/XML export of the wiki pages.',
-	         'url'    => 'http://eye48.com/go/dokusioc'
-	         );
-    }
- 
-    /**
     * Register its handlers with the DokuWiki's event controller
     */
     function register(Doku_Event_Handler $controller)

@@ -1,8 +1,8 @@
 base    dokusioc
-author  Michael Haschke
-email   haschek@eye48.com
-date    2010-05-01
+author  Mark C. Prins (previously Michael Haschke)
+email   mprins@users.sf.net
+date    2020-06-12
 name    DokuSIOC
 desc    It adds an alternate meta link of the SIOC-RDF/XML document to HTML head, creates SIOC version of wiki content (RDF/XML export), checks the requested application type (content negotiation) and it pings PTSW.com for pushing updates.
-url     http://eye48.com/go/dokusioc
+url     https://www.dokuwiki.org/plugin:dokusioc
 
