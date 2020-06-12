@@ -16,3 +16,9 @@ DokuSIOC integrates the [SIOC ontology](http://sioc-project.org/ontology) within
   * Content Negotiation for application/rdf+xml requests
   * Possibility to hide RDF content from search engines
 
+[![Build Status](https://travis-ci.org/mprins/DokuWiki-Plugin-DokuSIOC.svg?branch=master)](https://travis-ci.org/mprins/DokuWiki-Plugin-DokuSIOC)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mprins/DokuWiki-Plugin-DokuSIOC/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mprins/DokuWiki-Plugin-DokuSIOC/?branch=master)
+[![GitHub issues](https://img.shields.io/github/issues/mprins/DokuWiki-Plugin-DokuSIOC.svg)](https://github.com/mprins/DokuWiki-Plugin-DokuSIOC/issues)
+[![GitHub forks](https://img.shields.io/github/forks/mprins/DokuWiki-Plugin-DokuSIOC.svg)](https://github.com/mprins/DokuWiki-Plugin-DokuSIOC/network)
+[![GitHub stars](https://img.shields.io/github/stars/mprins/DokuWiki-Plugin-DokuSIOC.svg)](https://github.com/mprins/DokuWiki-Plugin-DokuSIOC/stargazers)
+[![GitHub license](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://raw.githubusercontent.com/mprins/DokuWiki-Plugin-DokuSIOC/master/LICENSE)
