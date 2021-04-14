@@ -16,7 +16,7 @@
  */
 
 /**
- * General tests for the dokusioc plugin
+ * General tests for the dokusioc plugin.
  *
  * @group plugin_dokusioc
  * @group plugins
@@ -28,8 +28,8 @@ class general_plugin_dokusioc_test extends DokuWikiTest {
     /**
      * Simple test to make sure the plugin.info.txt is in correct format
      */
-    public function test_plugininfo() {
-        $file = __DIR__.'/../plugin.info.txt';
+    public function test_plugininfo(): void {
+        $file = __DIR__ . '/../plugin.info.txt';
         $this->assertFileExists($file);
 
         $info = confToHash($file);
@@ -52,11 +52,10 @@ class general_plugin_dokusioc_test extends DokuWikiTest {
     /**
      * test if plugin is loaded.
      */
-    public function test_plugin_dokusioc_isloaded() {
+    public function test_plugin_dokusioc_isloaded(): void {
         global $plugin_controller;
-        $this->assertTrue(
-                    in_array('dokusioc', $plugin_controller->getList()),
-                    "dokusioc plugin is loaded"
-                            );
+        $this->assertContains(
+            'dokusioc', $plugin_controller->getList(), "dokusioc plugin is loaded"
+        );
     }
 }
