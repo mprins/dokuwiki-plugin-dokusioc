@@ -212,7 +212,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         global $ID, $conf;
 
         // check for type if unknown
-        if(!$_GET['type']) {
+        if(!($_GET['type'] ?? "")) {
             $userinfo = getDwUserInfo($ID, $this);
 
             if($userinfo) {
@@ -314,7 +314,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         // get user info
         $userinfo = getDwUserInfo($ID, $this);
 
-        // no userinfo means there is n user space or user does not exists
+        // no userinfo means there is no user space or user does not exists
         if($userinfo === false) {
             $this->exit("HTTP/1.0 404 Not Found");
         }
@@ -328,10 +328,11 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         );
         // create user object
         //print_r($userinfo); die();
+        // $id, $url, $userid, $name, $email
         $wikiuser = new SIOCDokuWikiUser(
             $ID,
             normalizeUri($exporter->siocURL('user', $ID)),
-            $userid,
+            $userinfo['user'],
             $userinfo['name'],
             $userinfo['mail']
         );
@@ -523,7 +524,10 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             arsort($test_accept);
             $accepted_order = array_keys($test_accept);
 
-            if($accepted_order[0] == 'application/rdf+xml' || $test_accept['application/rdf+xml'] == 'q=1.0') {
+            if($accepted_order[0] == 'application/rdf+xml' ||
+                (array_key_exists('application/rdf+xml', $test_accept)
+                    && $test_accept['application/rdf+xml'] == 'q=1.0')
+            ) {
                 return true;
             }
         }
@@ -599,7 +603,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             $event->data['link'][] = $metalink;
 
             // set canocial link for type URIs to prevent indexing double content
-            if($_GET['type']) {
+            if($_GET['type'] ?? "") {
                 $event->data['link'][] = array('rel' => 'canonical', 'href' => getAbsUrl(wl($ID)));
             }
         }
