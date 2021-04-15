@@ -94,9 +94,9 @@ class SIOCDokuWikiArticle extends SIOCObject {
     public function getContent(&$exp): string {
         $rdf = '<' . $this->type . " rdf:about=\"" . clean($this->url, true) . "\">\n";
         if($this->subject) {
-            $rdf .= "\t<dc:title>" . clean($this->subject) . "</dc:title>\n";
+            $rdf .= "    <dc:title>" . clean($this->subject) . "</dc:title>\n";
             // if(strcmp($this->has_container, 'http://en.wikipedia.org')===0)
-            //    $rdf .= "\t<foaf:primaryTopic rdf:resource=\"".clean('http://dbpedia.org/resource/'
+            //    $rdf .= "    <foaf:primaryTopic rdf:resource=\"".clean('http://dbpedia.org/resource/'
             //      .$this->subject)."\"/>\n";
         }
 
@@ -105,7 +105,7 @@ class SIOCDokuWikiArticle extends SIOCObject {
         if(count($this->contributors) > 0) {
             foreach($this->contributors as $cont_id => $cont_name) {
                 if(!isset($this->creator['sioc:modifier']) || ($this->creator['sioc:modifier'] != $cont_id)) {
-                    $rdf .= "\t<sioc:has_modifier rdf:resource=\"" . normalizeUri($exp->siocURL('user', $cont_id))
+                    $rdf .= "    <sioc:has_modifier rdf:resource=\"" . normalizeUri($exp->siocURL('user', $cont_id))
                         . "\" rdfs:label=\"" . clean($cont_name) . "\"/>\n";
                 }
             }
@@ -117,57 +117,57 @@ class SIOCDokuWikiArticle extends SIOCObject {
 
         if(is_array($this->creator)) {
             // if ($this->creator['foaf:maker'])
-            //     $rdf .= "\t<foaf:maker rdf:resource=\"".clean($this->creator['foaf:maker'])."\"/>\n";
+            //     $rdf .= "    <foaf:maker rdf:resource=\"".clean($this->creator['foaf:maker'])."\"/>\n";
             if($this->creator['sioc:modifier']) {
                 if($this->is_creator === false) {
-                    $rdf .= "\t<sioc:has_modifier rdf:resource=\""
+                    $rdf .= "    <sioc:has_modifier rdf:resource=\""
                         . normalizeUri($exp->siocURL('user', $this->creator['sioc:modifier'])) . "\" $creator_name/>\n";
                 }
                 if($this->is_creator === true) {
-                    $rdf .= "\t<sioc:has_creator rdf:resource=\""
+                    $rdf .= "    <sioc:has_creator rdf:resource=\""
                         . normalizeUri($exp->siocURL('user', $this->creator['sioc:modifier'])) . "\" $creator_name/>\n";
                 }
             }
         }
 
         if($this->created) {
-            $rdf .= "\t<dcterms:created>" . $this->created . "</dcterms:created>\n";
+            $rdf .= "    <dcterms:created>" . $this->created . "</dcterms:created>\n";
         }
 
         if($this->modified) {
-            $rdf .= "\t<dcterms:modified>" . $this->modified . "</dcterms:modified>\n";
+            $rdf .= "    <dcterms:modified>" . $this->modified . "</dcterms:modified>\n";
         }
 
         if($this->has_space) {
-            $rdf .= "\t<sioc:has_space rdf:resource=\"" . clean($this->has_space, true) . "\" />\n";
+            $rdf .= "    <sioc:has_space rdf:resource=\"" . clean($this->has_space, true) . "\" />\n";
             // TODO: rdfs:label
         }
 
         if($this->has_container) {
-            $rdf .= "\t<sioc:has_container rdf:resource=\""
+            $rdf .= "    <sioc:has_container rdf:resource=\""
                 . normalizeUri($exp->siocURL('container', $this->has_container)) . "\" />\n";
             // TODO: rdfs:label
         }
 
         if($this->content) {
-            $rdf .= "\t<sioc:content><![CDATA[" . pureContent($this->content) . "]]></sioc:content>\n";
+            $rdf .= "    <sioc:content><![CDATA[" . pureContent($this->content) . "]]></sioc:content>\n";
         }
 
         if($this->content_encoded) {
-            $rdf .= "\t<content:encoded><![CDATA[" . $this->content_encoded . "]]></content:encoded>\n";
+            $rdf .= "    <content:encoded><![CDATA[" . $this->content_encoded . "]]></content:encoded>\n";
         }
 
         /*
         if(is_array($this->topics)) {
             foreach($this->topics as $topic=>$url) {
-                $rdf .= "\t<sioc:topic>\n";
-                $rdf .= "\t\t<sioct:Category rdf:about=\"" . clean($url) ."\">\n";
-                $rdf .= "\t\t\t<rdfs:seeAlso rdf:resource=\"" .
+                $rdf .= "    <sioc:topic>\n";
+                $rdf .= "        <sioct:Category rdf:about=\"" . clean($url) ."\">\n";
+                $rdf .= "            <rdfs:seeAlso rdf:resource=\"" .
                         clean('http://ws.sioc-project.org/mediawiki/mediawiki.php?wiki='.$url);
                 if ($this->api) $rdf .= clean("&api=" . $this->api);
                 $rdf .= "\"/>\n";
-                $rdf .= "\t\t</sioct:Category>\n";
-                $rdf .= "\t</sioc:topic>\n";
+                $rdf .= "        </sioct:Category>\n";
+                $rdf .= "    </sioc:topic>\n";
             }
         }
         */
@@ -175,7 +175,7 @@ class SIOCDokuWikiArticle extends SIOCObject {
         if(is_array($this->links) && count($this->links) > 0) {
             foreach($this->links as $link_id => $link_exists) {
                 if($link_exists && !isHiddenPage($link_id)) {
-                    $rdf .= "\t<sioc:links_to rdf:resource=\""
+                    $rdf .= "    <sioc:links_to rdf:resource=\""
                         . normalizeUri($exp->siocURL('post', $link_id)) . "\"/>\n";
                     // TODO: rdfs:label
                 }
@@ -185,7 +185,7 @@ class SIOCDokuWikiArticle extends SIOCObject {
         if(count($this->backlinks) > 0) {
             foreach($this->backlinks as $link_id) {
                 if(!isHiddenPage($link_id)) {
-                    $rdf .= "\t<dcterms:isReferencedBy rdf:resource=\""
+                    $rdf .= "    <dcterms:isReferencedBy rdf:resource=\""
                         . normalizeUri($exp->siocURL('post', $link_id)) . "\"/>\n";
                     // TODO: rdfs:label
                 }
@@ -195,13 +195,13 @@ class SIOCDokuWikiArticle extends SIOCObject {
         /*
         if(is_array($this->ext_links)) {
             foreach($this->ext_links as $label=>$url) {
-                $rdf .= "\t<sioc:links_to rdf:resource=\"" . clean($url) ."\"/>\n";
+                $rdf .= "    <sioc:links_to rdf:resource=\"" . clean($url) ."\"/>\n";
             }
         }
         */
 
         if($this->previous_version) {
-            $rdf .= "\t<sioc:previous_version rdf:resource=\""
+            $rdf .= "    <sioc:previous_version rdf:resource=\""
                 . normalizeUri(
                     $exp->siocURL(
                         'post', $this->id . $exp->_urlseparator . 'rev' . $exp->_urlequal
@@ -211,7 +211,7 @@ class SIOCDokuWikiArticle extends SIOCObject {
             // TODO: rdfs:label
 
             /* If there is support for inference and transitivity the following is not needed */
-            $rdf .= "\t<sioc:earlier_version rdf:resource=\""
+            $rdf .= "    <sioc:earlier_version rdf:resource=\""
                 . normalizeUri(
                     $exp->siocURL(
                         'post', $this->id . $exp->_urlseparator . 'rev' . $exp->_urlequal
@@ -223,7 +223,7 @@ class SIOCDokuWikiArticle extends SIOCObject {
         }
 
         if($this->next_version) {
-            $rdf .= "\t<sioc:next_version rdf:resource=\""
+            $rdf .= "    <sioc:next_version rdf:resource=\""
                 . normalizeUri(
                     $exp->siocURL(
                         'post', $this->id . $exp->_urlseparator . 'rev' . $exp->_urlequal
@@ -233,7 +233,7 @@ class SIOCDokuWikiArticle extends SIOCObject {
             // TODO: rdfs:label
 
             /* If there is support for inference and transitivity the following is not needed */
-            $rdf .= "\t<sioc:later_version rdf:resource=\""
+            $rdf .= "    <sioc:later_version rdf:resource=\""
                 . normalizeUri(
                     $exp->siocURL(
                         'post', $this->id . $exp->_urlseparator . 'rev' . $exp->_urlequal
@@ -244,29 +244,29 @@ class SIOCDokuWikiArticle extends SIOCObject {
         }
 
         if($this->latest_version) {
-            $rdf .= "\t<sioc:latest_version rdf:resource=\""
+            $rdf .= "    <sioc:latest_version rdf:resource=\""
                 . normalizeUri($exp->siocURL('post', $this->id)) . "\"/>\n";
             // TODO: rdfs:label
         }
 
         /*
         if($this->has_discussion && (strpos($this->has_discussion, 'Talk:Talk:') == FALSE)) {
-                $rdf .= "\t<sioc:has_discussion>\n";
-                $rdf .= "\t\t<sioct:WikiArticle rdf:about=\"" . clean($this->has_discussion) ."\">\n";
-                $rdf .= "\t\t\t<rdfs:seeAlso rdf:resource=\"" .
+                $rdf .= "    <sioc:has_discussion>\n";
+                $rdf .= "        <sioct:WikiArticle rdf:about=\"" . clean($this->has_discussion) ."\">\n";
+                $rdf .= "            <rdfs:seeAlso rdf:resource=\"" .
                         clean('http://ws.sioc-project.org/mediawiki/mediawiki.php?wiki='.$this->has_discussion);
                 if ($this->api) $rdf .= clean("&api=" . $this->api);
                 $rdf .= "\"/>\n";
-                $rdf .= "\t\t</sioct:WikiArticle>\n";
-                $rdf .= "\t</sioc:has_discussion>\n";
+                $rdf .= "        </sioct:WikiArticle>\n";
+                $rdf .= "    </sioc:has_discussion>\n";
         }
         */
 
         /*
         if($this->redirpage)
         {
-            $rdf .= "\t<owl:sameAs rdf:resource=\"" . clean($this->redirpage) ."\"/>\n";
-            $rdf .= "\t<rdfs:seeAlso rdf:resource=\"" . 
+            $rdf .= "    <owl:sameAs rdf:resource=\"" . clean($this->redirpage) ."\"/>\n";
+            $rdf .= "    <rdfs:seeAlso rdf:resource=\"" . 
                         clean('http://ws.sioc-project.org/mediawiki/mediawiki.php?wiki='.$this->redirpage);
             if ($this->api) $rdf .= clean("&api=" . $this->api);
             $rdf .= "\"/>\n";
@@ -320,35 +320,35 @@ class SIOCDokuWikiUser extends SIOCObject {
     public function getContent(&$exp): string {
         $rdf = "<sioc:UserAccount rdf:about=\"" . clean($this->url, true) . "\">\n";
         if($this->nick) {
-            $rdf .= "\t<sioc:name>" . clean($this->nick) . "</sioc:name>\n";
+            $rdf .= "    <sioc:name>" . clean($this->nick) . "</sioc:name>\n";
         }
         if($this->email) {
             if($exp->_export_email) {
-                $rdf .= "\t<sioc:email rdf:resource=\"" . $this->email . "\"/>\n";
+                $rdf .= "    <sioc:email rdf:resource=\"" . $this->email . "\"/>\n";
             }
-            $rdf .= "\t<sioc:email_sha1>" . $this->sha1 . "</sioc:email_sha1>\n";
+            $rdf .= "    <sioc:email_sha1>" . $this->sha1 . "</sioc:email_sha1>\n";
         }
         if($this->role) {
-            $rdf .= "\t<sioc:has_function>\n";
-            $rdf .= "\t\t<sioc:Role>\n";
-            $rdf .= "\t\t\t<sioc:name>" . $this->role . "</sioc:name>\n";
-            $rdf .= "\t\t</sioc:Role>\n";
-            $rdf .= "\t</sioc:has_function>\n";
+            $rdf .= "    <sioc:has_function>\n";
+            $rdf .= "        <sioc:Role>\n";
+            $rdf .= "            <sioc:name>" . $this->role . "</sioc:name>\n";
+            $rdf .= "        </sioc:Role>\n";
+            $rdf .= "    </sioc:has_function>\n";
         }
-        $rdf .= "\t<sioc:account_of>\n";
-        $rdf .= "\t\t<foaf:Person>\n";
+        $rdf .= "    <sioc:account_of>\n";
+        $rdf .= "        <foaf:Person>\n";
         if($this->name) {
-            $rdf .= "\t\t\t<foaf:name>" . clean($this->name) . "</foaf:name>\n";
+            $rdf .= "            <foaf:name>" . clean($this->name) . "</foaf:name>\n";
         }
         if($this->email) {
-            $rdf .= "\t\t\t<foaf:mbox_sha1sum>" . $this->sha1 . "</foaf:mbox_sha1sum>\n";
+            $rdf .= "            <foaf:mbox_sha1sum>" . $this->sha1 . "</foaf:mbox_sha1sum>\n";
         }
         if($this->foaf_url) {
-            $rdf .= "\t\t\t<rdfs:seeAlso rdf:resource=\"" . $this->foaf_url . "\"/>\n";
+            $rdf .= "            <rdfs:seeAlso rdf:resource=\"" . $this->foaf_url . "\"/>\n";
         }
-        $rdf .= "\t\t</foaf:Person>\n";
-        $rdf .= "\t</sioc:account_of>\n";
-        //if($this->sioc_url) { $rdf .= "\t\t\t<rdfs:seeAlso rdf:resource=\"". $this->sioc_url ."\"/>\n"; }
+        $rdf .= "        </foaf:Person>\n";
+        $rdf .= "    </sioc:account_of>\n";
+        //if($this->sioc_url) { $rdf .= "            <rdfs:seeAlso rdf:resource=\"". $this->sioc_url ."\"/>\n"; }
         $rdf .= "</sioc:UserAccount>\n";
 
         return $rdf;
@@ -400,24 +400,24 @@ class SIOCDokuWikiContainer extends SIOCObject {
         $rdf = '<' . $this->type . " rdf:about=\"" . normalizeUri(clean($this->url, true)) . "\" >\n";
 
         if($this->title) {
-            $rdf .= "\t<sioc:name>" . clean($this->title) . "</sioc:name>\n";
+            $rdf .= "    <sioc:name>" . clean($this->title) . "</sioc:name>\n";
         }
 
         if($this->_has_parent) {
-            $rdf .= "\t<sioc:has_parent rdf:resource=\""
+            $rdf .= "    <sioc:has_parent rdf:resource=\""
                 . normalizeUri($exp->siocURL('container', $this->_has_parent)) . "\" />\n";
             // TODO: rdfs:label
         }
 
         foreach($this->posts as $article) {
             // TODO: test permission before?
-            $rdf .= "\t<sioc:container_of rdf:resource=\""
+            $rdf .= "    <sioc:container_of rdf:resource=\""
                 . normalizeUri($exp->siocURL('post', $article['id'])) . "\"/>\n";
             // TODO: inluding title/name
         }
 
         foreach($this->subcontainers as $container) {
-            $rdf .= "\t<sioc:parent_of rdf:resource=\""
+            $rdf .= "    <sioc:parent_of rdf:resource=\""
                 . normalizeUri($exp->siocURL('container', $container['id'])) . "\"/>\n";
             // TODO: inluding title/name
         }
