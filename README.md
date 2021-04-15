@@ -1,7 +1,7 @@
 # DokuSIOC -- a SIOC plugin for DokuWiki
 
-DokuSIOC integrates the [SIOC ontology](http://sioc-project.org/ontology) within 
-[DokuWiki](http://dokuwiki.org/) and provides alternate RDF/XML views of the wiki documents.
+DokuSIOC integrates the [SIOC ontology](http://rdfs.org/sioc/spec/) within 
+[DokuWiki](https://dokuwiki.org/) and provides alternate RDF/XML views of the wiki documents.
 
 
 ## Features
@@ -11,12 +11,11 @@ DokuSIOC integrates the [SIOC ontology](http://sioc-project.org/ontology) within
     next/previous versions, creator/modifier, contributors, date, content,
     container and inner wiki links between the articles.
   * It adds a link to those meta descriptions in the HTML header.
-  * Pings [pingthesemanticweb.com](http://pingthesemanticweb.com/) for new/edited content
   * Linked Data
   * Content Negotiation for application/rdf+xml requests
   * Possibility to hide RDF content from search engines
 
-[![Build Status](https://travis-ci.org/mprins/DokuWiki-Plugin-DokuSIOC.svg?branch=master)](https://travis-ci.org/mprins/DokuWiki-Plugin-DokuSIOC)
+[![CI](https://github.com/mprins/dokuwiki-plugin-dokusioc/actions/workflows/CI.yml/badge.svg)](https://github.com/mprins/dokuwiki-plugin-dokusioc/actions/workflows/CI.yml)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mprins/DokuWiki-Plugin-DokuSIOC/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mprins/DokuWiki-Plugin-DokuSIOC/?branch=master)
 [![GitHub issues](https://img.shields.io/github/issues/mprins/DokuWiki-Plugin-DokuSIOC.svg)](https://github.com/mprins/DokuWiki-Plugin-DokuSIOC/issues)
 [![GitHub forks](https://img.shields.io/github/forks/mprins/DokuWiki-Plugin-DokuSIOC.svg)](https://github.com/mprins/DokuWiki-Plugin-DokuSIOC/network)
