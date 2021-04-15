@@ -77,15 +77,10 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
     /**
      * Register its handlers with the DokuWiki's event controller
      */
-    public function register(Doku_Event_Handler $controller) {
+    public function register(Doku_Event_Handler $controller): void {
         //print_r(headers_list()); die();
-
         // test the requested action
         $controller->register_hook('ACTION_ACT_PREPROCESS', 'BEFORE', $this, 'checkAction', $controller);
-        // pingthesemanticweb.com
-        if($this->getConf('pingsw')) {
-            $controller->register_hook('ACTION_SHOW_REDIRECT', 'BEFORE', $this, 'pingService', $controller);
-        }
     }
 
     /* -- Event handlers ---------------------------------------------------- */
@@ -95,10 +90,10 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         //print_r($INFO); die();
         //print_r(headers_list()); die();
 
-        if($action->data == 'export_siocxml') {
+        if($action->data === 'export_siocxml') {
             // give back rdf
             $this->exportSioc();
-        } elseif(($action->data == 'show' || $action->data == 'index') && $INFO['perm']
+        } elseif(($action->data === 'show' || $action->data === 'index') && $INFO['perm']
             && !defined('DOKU_MEDIADETAIL')
             && ($INFO['exists'] || getDwUserInfo($INFO['id'], $this)) && !isHiddenPage($INFO['id'])) {
             if($this->isRdfXmlRequest()) {
@@ -158,8 +153,8 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
 
         // Include SIOC libs
 
-        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'sioc_inc.php');
-        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'sioc_dokuwiki.php');
+        require_once(__DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'sioc_inc.php');
+        require_once(__DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'sioc_dokuwiki.php');
 
         // Create exporter
 
@@ -481,7 +476,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
         return getAbsUrl($url);
     }
 
-    public function isRdfXmlRequest() {
+    public function isRdfXmlRequest(): bool {
         // get accepted types
         $http_accept = trim($_SERVER['HTTP_ACCEPT']);
 
@@ -513,7 +508,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             foreach($accepted as $format) {
                 $formatspec = explode(';', $format);
                 $k          = trim($formatspec[0]);
-                if(count($formatspec) == 2) {
+                if(count($formatspec) === 2) {
                     $test_accept[$k] = trim($formatspec[1]);
                 } else {
                     $test_accept[$k] = 'q=1.0';
@@ -524,9 +519,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
             arsort($test_accept);
             $accepted_order = array_keys($test_accept);
 
-            if($accepted_order[0] == 'application/rdf+xml' ||
+            if($accepted_order[0] === 'application/rdf+xml' ||
                 (array_key_exists('application/rdf+xml', $test_accept)
-                    && $test_accept['application/rdf+xml'] == 'q=1.0')
+                    && $test_accept['application/rdf+xml'] === 'q=1.0')
             ) {
                 return true;
             }
@@ -555,7 +550,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
 
         // Test for valid types
 
-        if(!(($sioc_type == 'post' && $INFO['exists']) || $sioc_type == 'user' || $sioc_type == 'container')) {
+        if(!(($sioc_type === 'post' && $INFO['exists']) || $sioc_type === 'user' || $sioc_type === 'container')) {
             return false;
         }
 
@@ -610,43 +605,11 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin {
 
         return $metalink;
     }
-
-    public function pingService($data, $controller) {
-        // TODO: test acl
-        // TODO: write in message queue (?)
-
-        if($data->data['preact'] == array('save' => 'Save') || $data->data['preact'] == 'save') {
-            //die('http://pingthesemanticweb.com/rest/?url='.urlencode(getAbsUrl(wl($data->data['id']))));
-            //$ping = fopen('http://pingthesemanticweb.com/rest/?url='.urlencode(getAbsUrl(wl($data->data['id']))),'r');
-            // it must be a post, and it's the last revision
-            $ping = @fopen(
-                'http://pingthesemanticweb.com/rest/?url='
-                . urlencode(
-                    normalizeUri(
-                        getAbsUrl(
-                            exportlink(
-                                $data->data['id'], 'siocxml', array('type' => 'post'), false, '&'
-                            )
-                        )
-                    )
-                ), 'r'
-            );
-            @fclose($ping);
-        }
-    }
-
-    private function getDate($date, $date_alt = null) {
-        if(!$date) {
-            $date = $date_alt;
-        }
-        return date('c', $date);
-    }
-
 }
 
 if(!function_exists('getAbsUrl')) {
     function getAbsUrl($url = null) {
-        if($url == null) {
+        if($url === null) {
             $url = DOKU_BASE;
         }
         return str_replace(DOKU_BASE, DOKU_URL, $url);
