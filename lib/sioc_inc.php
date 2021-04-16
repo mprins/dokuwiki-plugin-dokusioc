@@ -108,10 +108,11 @@ class SIOCExporter {
         $type_part = $this->url4type . $this->urlequal . $type;
 
         if($id) {
-            if(isset($this->type_table[$type]))
-                $myID = $this->type_table[$type];
-            else
-                $myID = (($this->url_usetype) ? $type . '_' : '') . $this->url4id;
+            if(isset($this->type_table[$type])) {
+                            $myID = $this->type_table[$type];
+            } else {
+                            $myID = (($this->url_usetype) ? $type . '_' : '') . $this->url4id;
+            }
 
             $id_part = $this->urlseparator . $myID . $this->urlequal . $id;
         } else {
@@ -450,8 +451,12 @@ class SIOCThread extends SIOCObject {
     public function getContent(&$exp): string {
         $rdf = '<sioc:Thread rdf:about="' . clean($this->url) . "\">\n";
         $rdf .= "    <sioc:link rdf:resource=\"" . clean($this->url) . "\"/>\n";
-        if($this->views) $rdf .= "    <sioc:num_views>" . $this->views . "</sioc:num_views>\n";
-        if($this->note) $rdf .= "    <rdfs:comment>" . $this->note . "</rdfs:comment>\n";
+        if($this->views) {
+          $rdf .= "    <sioc:num_views>" . $this->views . "</sioc:num_views>\n";
+        }
+        if($this->note) {
+          $rdf .= "    <rdfs:comment>" . $this->note . "</rdfs:comment>\n";
+        }
         if($this->subject) {
             $rdf .= "    <dc:title>" . $this->subject . "</dc:title>\n";
         }
@@ -601,11 +606,19 @@ class SIOCForum extends SIOCObject {
 
     public function getContent(&$exp): string {
         $rdf = '<' . $this->_type . ' rdf:about="' . clean($this->url) . "\">\n";
-        if($this->_type != 'sioc:Forum') $rdf .= "    <rdf:type rdf:resource=\"http://rdfs.org/sioc/ns#Forum\" />\n";
+        if($this->_type != 'sioc:Forum') {
+          $rdf .= "    <rdf:type rdf:resource=\"http://rdfs.org/sioc/ns#Forum\" />\n";
+        }
         $rdf .= "    <sioc:link rdf:resource=\"" . clean($this->url) . "\"/>\n";
-        if($this->blog_title) $rdf .= "    <dc:title>" . $this->blog_title . "</dc:title>\n";
-        if($this->description) $rdf .= "    <dc:description>" . $this->description . "</dc:description>\n";
-        if($this->note) $rdf .= "    <rdfs:comment>" . $this->note . "</rdfs:comment>\n";
+        if($this->blog_title) {
+          $rdf .= "    <dc:title>" . $this->blog_title . "</dc:title>\n";
+        }
+        if($this->description) {
+          $rdf .= "    <dc:description>" . $this->description . "</dc:description>\n";
+        }
+        if($this->note) {
+          $rdf .= "    <rdfs:comment>" . $this->note . "</rdfs:comment>\n";
+        }
 
         if($this->parents) {
             foreach($this->parents as $id => $uri) {
@@ -684,8 +697,10 @@ class SIOCForum extends SIOCObject {
                 $rdf .= "        <sioc:UserAccount rdf:about=\"" . clean($this->administrator->_uri) . "\">\n";
                 if($this->administrator->_sioc_url) {
                     $rdf .= "            <rdfs:seeAlso rdf:resource=\"" . $this->administrator->_sioc_url . "\"/>\n";
-                } else $rdf .= "            <rdfs:seeAlso rdf:resource=\""
+                } else {
+                  $rdf .= "            <rdfs:seeAlso rdf:resource=\""
                                                         . $exp->siocURL('user', $this->administrator->_id) . "\"/>\n";
+                }
                 $rdf .= "        </sioc:UserAccount>\n";
                 $rdf .= "    </sioc:has_administrator>\n";
             }
@@ -765,7 +780,9 @@ class SIOCPost extends SIOCObject {
 
     public function getContent(&$exp): string {
         $rdf = '<' . $this->_type . " rdf:about=\"" . clean($this->url) . "\">\n";
-        if($this->_type != 'sioc:Post') $rdf .= "    <rdf:type rdf:resource=\"http://rdfs.org/sioc/ns#Post\" />\n";
+        if($this->_type != 'sioc:Post') {
+          $rdf .= "    <rdf:type rdf:resource=\"http://rdfs.org/sioc/ns#Post\" />\n";
+        }
         if($this->subject) {
             $rdf .= "    <dc:title>" . $this->subject . "</dc:title>\n";
         }
@@ -810,8 +827,10 @@ class SIOCPost extends SIOCObject {
             }
         }
         $rdf .= "    <dcterms:created>" . $this->created . "</dcterms:created>\n";
-        if($this->updated and ($this->created != $this->updated)) $rdf .= "    <dcterms:modified>"
+        if($this->updated and ($this->created != $this->updated)) {
+          $rdf .= "    <dcterms:modified>"
             . $this->updated . "</dcterms:modified>\n";
+        }
         $rdf .= "    <sioc:content>" . pureContent($this->content) . "</sioc:content>\n";
 
         $rdf .= "    <content:encoded><![CDATA[" . $this->encoded . "]]></content:encoded>\n";
