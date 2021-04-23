@@ -15,6 +15,7 @@ DokuSIOC integrates the [SIOC ontology](http://rdfs.org/sioc/spec/) within
   * Content Negotiation for application/rdf+xml requests
   * Possibility to hide RDF content from search engines
 
+----
 [![CI](https://github.com/mprins/dokuwiki-plugin-dokusioc/actions/workflows/CI.yml/badge.svg)](https://github.com/mprins/dokuwiki-plugin-dokusioc/actions/workflows/CI.yml)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/mprins/DokuWiki-Plugin-DokuSIOC/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/mprins/DokuWiki-Plugin-DokuSIOC/?branch=master)
 [![GitHub issues](https://img.shields.io/github/issues/mprins/DokuWiki-Plugin-DokuSIOC.svg)](https://github.com/mprins/DokuWiki-Plugin-DokuSIOC/issues)
