@@ -21,22 +21,26 @@
  * @group plugin_dokusioc
  * @group plugins
  */
-class action_plugin_dokusioc_test extends DokuWikiTest {
+class action_plugin_dokusioc_test extends DokuWikiTest
+{
 
     protected $pluginsEnabled = array('dokusioc');
 
-    public function setUp(): void {
+    public function setUp(): void
+    {
         global $conf;
 
         parent::setUp();
     }
 
-    public function testHeaders(): void {
+    public function testHeaders(): void
+    {
         $request  = new TestRequest();
         $response = $request->get(array('id' => 'wiki:dokuwiki'), '/doku.php');
 
         $this->assertNotFalse(
-            strpos($response->getContent(), 'DokuWiki'), 'DokuWiki was not a word in the output'
+            strpos($response->getContent(), 'DokuWiki'),
+            'DokuWiki was not a word in the output'
         );
 
         // check meta header
