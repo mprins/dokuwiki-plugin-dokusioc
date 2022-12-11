@@ -45,7 +45,7 @@ class action_plugin_dokusioc_test extends DokuWikiTest
 
         // check meta header
         $this->assertEquals(
-            "Article 'DokuWiki' (SIOC document as RDF/XML)",
+            "DokuWiki",
             $response->queryHTML('link[type="application/rdf+xml"]')->attr('title')
         );
     }

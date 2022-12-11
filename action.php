@@ -2,8 +2,6 @@
 /**
  * DokuSIOC - SIOC plugin for DokuWiki
  *
- * version 0.1.2
- *
  * DokuSIOC integrates the SIOC ontology within DokuWiki and provides an
  * alternate RDF/XML views of the wiki documents.
  *
@@ -11,19 +9,8 @@
  * backend. But the wiki API provides enough methods to get the data out, so
  * DokuSIOC as a plugin uses the export hook to provide accessible data as
  * RDF/XML, using the SIOC ontology as vocabulary.
- *
- * METADATA
- *
- * @author    Michael Haschke @ eye48.com
  * @copyright 2009 Michael Haschke
- * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License 2.0 (GPLv2)
- * @version   0.1.2
- *
- * WEBSITES
- *
- * @link      http://eye48.com/go/dokusioc Plugin Website and Overview
- * @link      http://github.com/haschek/DokuWiki-Plugin-DokuSIOC/issues Issue tracker
- *
+ * @copyright 2020 mprins
  * LICENCE
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -36,44 +23,12 @@
  *
  * @link      http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License 2.0 (GPLv2)
  *
- * CHANGELOG
- *
- * 0.1.2
- * - fix: meta link to post type is standard use now (issue 9)
- * - mod: titles for SIOC documents (issue 10)
- * - mod: use sioc:UserAccount instead of deprecated sioc:User (issue 2)
- * 0.1.1 (bugfix release)
- * - fix header output for content negotiation
- * - fix URIs for profile and SIOC ressource
- * - better dc:title for revisions
- * - add complete URI to rdf:about for foaf:Document (Profile) to make it explicit
- * - add rel="canonical" for URIs with type parameter, to prevent double content
- * 0.1
- * - exchange licence b/c CC-BY-SA was incompatible with GPL
- * - restructuring code base
- * - fix: wrong meta link for revisions
- * - add: possibility to send noindex by x-robots-tag via HTTP header
- * - add: soft check for requested application type
- * - mod: use search method to get container content on next sub level
- * - mod: better dc:title for foaf:document,
- * - mod: better distinction between user/container/post resources
- * - mod: normalize URIs
- * - fix: URIs for SIOC documents
- * - mod: use dcterms:created and sioc:has_creator only for first revision of wiki page b/c of inadequate meta data
- * - add: backlinks from wiki via dcterms:isReferencedBy
- * - add: contributors by sioc:has_modifier (only for last revision b/c of wrong meta data for older revisions)
- * - rem: foaf:person link in sioct:WikiArticle b/c it routes to same data like sioc:has_creater/modifier
- * - rem: Talis SIOC widget for comments b/c incompatibility with DokuWiki JS
- * poc
- * - proof of concept release under CC-BY-SA
- **/
+ */
 
 class action_plugin_dokusioc extends DokuWiki_Action_Plugin
 {
 
     private $agentlink = 'http://eye48.com/go/dokusioc?v=0.1.2';
-
-    /* -- Methods to manage plugin ------------------------------------------ */
 
     /**
      * Register it's handlers with the DokuWiki's event controller
@@ -341,7 +296,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         global $ID, $INFO, $REV, $conf;
 
         $exporter->setParameters(
-            'Article: ' . $INFO['meta']['title'] . ($REV ? ' (rev ' . $REV . ')' : ''),
+            $INFO['meta']['title'] . ($REV ? ' (rev ' . $REV . ')' : ''),
             $this->getDokuUrl(),
             $this->getDokuUrl() . 'doku.php?',
             'utf-8',
@@ -349,23 +304,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         );
 
         // create user object
-        // $id, $uri, $name, $email, $homepage='', $foaf_uri='', $role=false, $nick='', $sioc_url='', $foaf_url=''
         $dwuserpage_id = cleanID($this->getConf('userns')) . ($conf['useslash'] ? '/' : ':') . $INFO['editor'];
-        /*
-        if ($INFO['editor'] && $this->getConf('userns'))
-            $pageuser = new SIOCUser($INFO['editor'],
-                                        normalizeUri(getAbsUrl(exportlink($dwuserpage_id, 'siocxml',
-                                            array('type'=>'user'), false, '&'))), // user page
-                                        $INFO['meta']['contributor'][$INFO['editor']],
-                                        getDwUserInfo($dwuserpage_id,$this,'mail'),
-                                        '', // no homepage is saved for dokuwiki user
-                                        '#'.$INFO['editor'], // local uri
-                                        false, // no roles right now
-                                        '', // no nick name is saved for dokuwiki user
-                                        normalizeUri($exporter->siocURL('user', $dwuserpage_id))
-                                    );
-        */
-
         // create wiki page object
         $wikipage = new SIOCDokuWikiArticle(
             $ID, // id
@@ -481,19 +420,6 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         // save accepted types in array
         $accepted = explode(',', $http_accept);
 
-        /*
-        $debuginfo = implode(' // ', array(date('c',$_SERVER['REQUEST_TIME']), $_SERVER['HTTP_REFERER'],
-        $_SERVER['REMOTE_ADDR'], $_SERVER['REMOTE_HOST'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['HTTP_ACCEPT']));
-        global $conf; //print_r($conf); die();
-        //die($debuginfo);
-        $debuglog = @fopen($conf['tmpdir'].DIRECTORY_SEPARATOR.'requests.log', 'ab');
-        @fwrite($debuglog, $debuginfo."\n");
-        @fclose($debuglog);
-        @chmod($conf['tmpdir'].DIRECTORY_SEPARATOR.'requests.log', 0777);
-        */
-
-        // soft check, route to RDF when client requests it (don't check quality of request)
-
         if ($this->getConf('softck') && strpos($_SERVER['HTTP_ACCEPT'], 'application/rdf+xml') !== false) {
             return true;
         }
@@ -575,13 +501,13 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
                 break;
 
             case 'user':
-                $title     = htmlentities("User account '" . $userinfo['name'] . "' (SIOC document as RDF/XML)");
+                $title     = htmlentities($userinfo['name']);
                 $queryAttr = array('type' => 'user');
                 break;
 
             case 'post':
             default:
-                $title     = htmlentities("Article '" . $INFO['meta']['title'] . "' (SIOC document as RDF/XML)");
+                $title     = htmlentities($INFO['meta']['title']);
                 $queryAttr = array('type' => 'post');
                 if (isset($_GET['rev']) && $_GET['rev'] === (int)$_GET['rev']) {
                     $queryAttr['rev'] = $_GET['rev'];
