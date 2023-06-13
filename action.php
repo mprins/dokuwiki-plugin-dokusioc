@@ -507,7 +507,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
 
             case 'post':
             default:
-                $title     = htmlentities($INFO['meta']['title']);
+                $title     = htmlentities($INFO['meta']['title'] ?? $ID);
                 $queryAttr = array('type' => 'post');
                 if (isset($_GET['rev']) && $_GET['rev'] === (int)$_GET['rev']) {
                     $queryAttr['rev'] = $_GET['rev'];
