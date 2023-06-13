@@ -157,14 +157,12 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
 
         $rdf              = new SIOCExporter();
         $rdf->profile_url = normalizeUri(
-            getAbsUrl(
-                exportlink(
-                    $ID,
-                    'siocxml',
-                    array('type' => $sioc_type),
-                    false,
-                    '&'
-                )
+            exportlink(
+                $ID,
+                'siocxml',
+                array('type' => $sioc_type),
+                true,
+                '&'
             )
         );
         $rdf->setURLParameters('type', 'id', 'page', false);
@@ -240,8 +238,8 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
 
         $exporter->setParameters(
             'Container: ' . $title,
-            getAbsUrl(),
-            getAbsUrl() . 'doku.php?',
+            DOKU_URL,
+            DOKU_URL . 'doku.php?',
             'utf-8',
             $this->agentlink
         );
@@ -317,8 +315,8 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
 
         $exporter->setParameters(
             'Account: ' . $userinfo['name'],
-            getAbsUrl(),
-            getAbsUrl() . 'doku.php?',
+            DOKU_URL,
+            DOKU_URL . 'doku.php?',
             'utf-8',
             $this->agentlink
         );
@@ -351,20 +349,6 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         // create user object
         // $id, $uri, $name, $email, $homepage='', $foaf_uri='', $role=false, $nick='', $sioc_url='', $foaf_url=''
         $dwuserpage_id = cleanID($this->getConf('userns')) . ($conf['useslash'] ? '/' : ':') . $INFO['editor'];
-        /*
-        if ($INFO['editor'] && $this->getConf('userns'))
-            $pageuser = new SIOCUser($INFO['editor'],
-                                        normalizeUri(getAbsUrl(exportlink($dwuserpage_id, 'siocxml',
-                                            array('type'=>'user'), false, '&'))), // user page
-                                        $INFO['meta']['contributor'][$INFO['editor']],
-                                        getDwUserInfo($dwuserpage_id,$this,'mail'),
-                                        '', // no homepage is saved for dokuwiki user
-                                        '#'.$INFO['editor'], // local uri
-                                        false, // no roles right now
-                                        '', // no nick name is saved for dokuwiki user
-                                        normalizeUri($exporter->siocURL('user', $dwuserpage_id))
-                                    );
-        */
 
         // create wiki page object
         $wikipage = new SIOCDokuWikiArticle(
@@ -458,8 +442,6 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         if ($this->getConf('owners')) {
             $wikipage->addSite($this->getConf('owners'));
         }
-        // TODO: dc:contributor / has_modifier
-        // TODO: attachment (e.g. pictures in that dwns)
 
         // add wiki page to exporter
         $exporter->addObject($wikipage);
@@ -468,9 +450,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         return $exporter;
     }
 
-    private function getDokuUrl($url = null)
+    private function getDokuUrl($url = DOKU_BASE)
     {
-        return getAbsUrl($url);
+        return str_replace(DOKU_BASE, DOKU_URL, $url);;
     }
 
     public function isRdfXmlRequest(): bool
@@ -481,19 +463,7 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         // save accepted types in array
         $accepted = explode(',', $http_accept);
 
-        /*
-        $debuginfo = implode(' // ', array(date('c',$_SERVER['REQUEST_TIME']), $_SERVER['HTTP_REFERER'],
-        $_SERVER['REMOTE_ADDR'], $_SERVER['REMOTE_HOST'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['HTTP_ACCEPT']));
-        global $conf; //print_r($conf); die();
-        //die($debuginfo);
-        $debuglog = @fopen($conf['tmpdir'].DIRECTORY_SEPARATOR.'requests.log', 'ab');
-        @fwrite($debuglog, $debuginfo."\n");
-        @fclose($debuglog);
-        @chmod($conf['tmpdir'].DIRECTORY_SEPARATOR.'requests.log', 0777);
-        */
-
         // soft check, route to RDF when client requests it (don't check quality of request)
-
         if ($this->getConf('softck') && strpos($_SERVER['HTTP_ACCEPT'], 'application/rdf+xml') !== false) {
             return true;
         }
@@ -590,14 +560,14 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         }
 
         $metalink['title'] = $title;
-        $metalink['href']  = normalizeUri(getAbsUrl(exportlink($ID, 'siocxml', $queryAttr, false, '&')));
+        $metalink['href']  = normalizeUri((exportlink($ID, 'siocxml', $queryAttr, true, '&')));
 
         if ($event !== null) {
             $event->data['link'][] = $metalink;
 
             // set canocial link for type URIs to prevent indexing double content
             if ($_GET['type'] ?? "") {
-                $event->data['link'][] = array('rel' => 'canonical', 'href' => getAbsUrl(wl($ID)));
+                $event->data['link'][] = array('rel' => 'canonical', 'href' => wl($ID, '', true));
             }
         }
 
@@ -605,40 +575,24 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
     }
 }
 
-// TODO cleanup and just have this unconditionally
-if (!function_exists('getAbsUrl')) {
-    /**
-     * @param $url
-     * @return string
-     * @deprecated cleanup, use build-in function
-     */
-    function getAbsUrl($url = null): string
-    {
-        if ($url === null) {
-            $url = DOKU_BASE;
-        }
-        return str_replace(DOKU_BASE, DOKU_URL, $url);
-    }
-}
+//if (!function_exists('getDwUserEmail')) {
+//    /**
+//     * @param $user
+//     * @return string
+//     * @deprecated not used, will be removed
+//     */
+//    function getDwUserEmail($user): string
+//    {
+//        global $auth;
+//        if ($info = $auth->getUserData($user)) {
+//            return $info['mail'];
+//        } else {
+//            return false;
+//        }
+//    }
+//}
 
-if (!function_exists('getDwUserEmail')) {
-    /**
-     * @param $user
-     * @return string
-     * @deprecated not used, will be removed
-     */
-    function getDwUserEmail($user): string
-    {
-        global $auth;
-        if ($info = $auth->getUserData($user)) {
-            return $info['mail'];
-        } else {
-            return false;
-        }
-    }
-}
-
-if (!function_exists('getDwUserInfo')) {
+//if (!function_exists('getDwUserInfo')) {
     /**
      * @param $id
      * @param $pobj
@@ -667,7 +621,7 @@ if (!function_exists('getDwUserInfo')) {
             return false;
         }
     }
-}
+//}
 
 // sort query attributes by name
 if (!function_exists('normalizeUri')) {
