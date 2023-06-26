@@ -1,6 +1,7 @@
 name: 'Repository Maintenance'
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '17 3 * * 6'
 
@@ -18,7 +19,7 @@ jobs:
 
   workflows:
     runs-on: ubuntu-latest
-    name: Cleanup old workflow runs
+    name: 'Cleanup old workflow runs'
     steps:
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2
