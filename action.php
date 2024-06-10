@@ -414,6 +414,8 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
 
     public function isRdfXmlRequest(): bool
     {
+        if (!isset($_SERVER['HTTP_ACCEPT']) return false;
+        
         // get accepted types
         $http_accept = trim($_SERVER['HTTP_ACCEPT']);
 
