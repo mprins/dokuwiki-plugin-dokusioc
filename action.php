@@ -52,8 +52,8 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
             // give back rdf
             $this->exportSioc();
         } elseif (($action->data === 'show' || $action->data === 'index') && $INFO['perm'] && !defined(
-                'DOKU_MEDIADETAIL'
-            ) && ($INFO['exists'] || getDwUserInfo($INFO['id'], $this)) && !isHiddenPage($INFO['id'])) {
+            'DOKU_MEDIADETAIL'
+        ) && ($INFO['exists'] || getDwUserInfo($INFO['id'], $this)) && !isHiddenPage($INFO['id'])) {
             if ($this->isRdfXmlRequest()) {
                 // forward to rdfxml document if requested
                 // print_r(headers_list()); die();
@@ -203,7 +203,8 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
 
         // create container object
         $wikicontainer = new SIOCDokuWikiContainer(
-            $ID, normalizeUri($exporter->siocURL('container', $ID))
+            $ID,
+            normalizeUri($exporter->siocURL('container', $ID))
         );
 
         /* container is type=wiki */
@@ -281,7 +282,11 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
         //print_r($userinfo); die();
         // $id, $url, $userid, $name, $email
         $wikiuser = new SIOCDokuWikiUser(
-            $ID, normalizeUri($exporter->siocURL('user', $ID)), $userinfo['user'], $userinfo['name'], $userinfo['mail']
+            $ID,
+            normalizeUri($exporter->siocURL('user', $ID)),
+            $userinfo['user'],
+            $userinfo['name'],
+            $userinfo['mail']
         );
         /* TODO: avatar (using Gravatar) */ /* TODO: creator_of */
         // add user to exporter
@@ -414,7 +419,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
 
     public function isRdfXmlRequest(): bool
     {
-        if (!isset($_SERVER['HTTP_ACCEPT']) return false;
+        if (!isset($_SERVER['HTTP_ACCEPT'])) {
+            return false;
+        }
         
         // get accepted types
         $http_accept = trim($_SERVER['HTTP_ACCEPT']);
@@ -446,9 +453,9 @@ class action_plugin_dokusioc extends DokuWiki_Action_Plugin
             $accepted_order = array_keys($test_accept);
 
             if ($accepted_order[0] === 'application/rdf+xml' || (array_key_exists(
-                        'application/rdf+xml',
-                        $test_accept
-                    ) && $test_accept['application/rdf+xml'] === 'q=1.0')) {
+                'application/rdf+xml',
+                $test_accept
+            ) && $test_accept['application/rdf+xml'] === 'q=1.0')) {
                 return true;
             }
         }
@@ -628,4 +635,3 @@ if (!function_exists('normalizeUri')) {
         return implode('?', $parts);
     }
 }
-
